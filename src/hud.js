@@ -2,6 +2,22 @@
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/**
+ * Canvas can't read CSS custom properties, so the active palette is mirrored
+ * here as bare "r,g,b" channels. Re-read on every theme change.
+ */
+let palette = { hud: '255,179,55', ion: '95,211,243', mote: '255,196,110' };
+
+export function syncPalette() {
+  const cs = getComputedStyle(document.documentElement);
+  const pick = (name, current) => cs.getPropertyValue(name).trim() || current;
+  palette = {
+    hud: pick('--hud-rgb', palette.hud),
+    ion: pick('--ion-rgb', palette.ion),
+    mote: pick('--mote-rgb', palette.mote),
+  };
+}
+
 export function startField(canvas) {
   const x = canvas.getContext('2d');
   const still = reduced();
@@ -28,6 +44,7 @@ export function startField(canvas) {
   }
 
   size();
+  syncPalette();
   addEventListener('resize', size);
 
   function frame(t) {
@@ -44,13 +61,13 @@ export function startField(canvas) {
       x.setLineDash([2, 15 + i * 6]);
       x.beginPath();
       x.arc(cx, cy, r, a, a + Math.PI * 1.75);
-      x.strokeStyle = `rgba(255,179,55,${0.13 - i * 0.03})`;
+      x.strokeStyle = `rgba(${palette.hud},${0.13 - i * 0.03})`;
       x.lineWidth = 1;
       x.stroke();
     }
     x.setLineDash([]);
 
-    x.strokeStyle = 'rgba(95,211,243,0.07)';
+    x.strokeStyle = `rgba(${palette.ion},0.07)`;
     x.lineWidth = 1;
     x.beginPath();
     x.moveTo(cx - base, cy); x.lineTo(cx + base, cy);
@@ -64,7 +81,7 @@ export function startField(canvas) {
       }
       x.beginPath();
       x.arc(m.x, m.y, m.r, 0, Math.PI * 2);
-      x.fillStyle = `rgba(255,196,110,${m.o})`;
+      x.fillStyle = `rgba(${palette.mote},${m.o})`;
       x.fill();
     }
 
@@ -72,6 +89,10 @@ export function startField(canvas) {
   }
 
   if (still) frame(0); else requestAnimationFrame(frame);
+
+  // Returned so a palette change can repaint at once — in reduced-motion mode
+  // there is no next frame to pick the new colours up.
+  return () => frame(performance.now());
 }
 
 /** Tick marks around the reactor ring — every 5th one runs longer. */

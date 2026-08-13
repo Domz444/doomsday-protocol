@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DOOMSDAY PROTOCOL // Stark Mission Manifest</title>
-  <meta name="description" content="Track every Marvel film and series worth watching before Avengers: Doomsday — solo, or as a squad on one shared board." />
+  <meta name="description" content="Track every Marvel film and series worth watching before Avengers: Doomsday, solo or as a squad on one shared board." />
   <meta name="theme-color" content="#05080e" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
@@ -17,12 +17,12 @@
   <div class="overlay" aria-hidden="true"></div>
 
   <div id="boot" aria-hidden="true">
-    <div class="sigil">STARK INDUSTRIES</div>
+    <div class="sigil" id="boot-sigil">Stark Industries</div>
     <ol>
       <li><b>J.A.R.V.I.S. kernel</b><span>ONLINE</span></li>
       <li><b>Multiversal telemetry</b><span>SYNCED</span></li>
       <li><b>Incursion forecast</b><span>CRITICAL</span></li>
-      <li><b>Manifest — 38 entries</b><span>LOADED</span></li>
+      <li><b>Manifest: 38 entries</b><span>LOADED</span></li>
       <li><b>Countdown to Doomsday</b><span>RUNNING</span></li>
     </ol>
   </div>
@@ -30,17 +30,17 @@
   <div class="shell">
     <div class="topbar">
       <span class="live"><span class="dot"></span><span id="sync-status">SOLO</span></span>
-      <span>CLEARANCE: STARK-01</span>
-      <span>SECTOR: EARTH-616</span>
+      <span id="chrome-clearance">CLEARANCE: STARK-01</span>
+      <span id="chrome-sector">SECTOR: EARTH-616</span>
       <span class="spacer">TARGET: 18 DEC 2026</span>
     </div>
 
     <header class="masthead">
-      <div class="eyebrow">◆ Incursion imminent — briefing required</div>
+      <div class="eyebrow">◆ Incursion imminent: briefing required</div>
       <h1>Doomsday<em>Protocol</em></h1>
       <p>
         Thirty-eight transmissions stand between you and <strong>Avengers: Doomsday</strong>.
-        Sorted by how badly you'll be lost without them — critical path first, roster context
+        Sorted by how badly you'll be lost without them: critical path first, roster context
         second, deep lore for completionists, and the mutant archive because half that cast is
         walking back through a hole in reality. Tap any entry to log it, or
         <strong>form a squad</strong> and watch your friends' progress land on the same board.
@@ -126,11 +126,14 @@
     </div>
 
     <footer class="footer">
-      <span>Stark Industries // Doomsday Protocol v1.0</span>
+      <span id="chrome-org">Stark Industries // Doomsday Protocol v1.0</span>
       <span>Runtimes are estimates</span>
       <span class="spacer">Solo progress stays on this device</span>
     </footer>
   </div>
+
+  <!-- palette sigils; populated from themes.js -->
+  <nav class="sigils" id="sigils" aria-label="HUD palette"></nav>
 
   <!-- callsign / join dialog -->
   <dialog id="prompt">

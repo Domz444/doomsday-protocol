@@ -21,6 +21,11 @@
   --ion-mid:   #2b93b4;
   --ion-dim:   #17495c;
 
+  /* bare channels for the glows and the canvas field, which need rgba() */
+  --hud-rgb:   255,179,55;
+  --ion-rgb:   95,211,243;
+  --mote-rgb:  255,196,110;
+
   /* semantic */
   --alert:     #ff4d3d;
   --alert-dim: #7a2018;
@@ -36,6 +41,53 @@
   --f-text: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
 }
 
+/* ---------------- alternate palettes ----------------
+   Selected from the sigil rail; see themes.js. Each block redefines only the
+   ground and the two ink channels, because nothing below this point names a
+   colour directly. Stark is the bare :root above. */
+
+:root[data-theme="spider"] {
+  --void: #0a0509; --plate: #170a12; --plate-hi: #1f0e18; --edge: #3a1526;
+  --hud: #ff4d5e; --hud-mid: #c2303f; --hud-dim: #6b1a24; --hud-rgb: 255,77,94;
+  --ion: #4d8dff; --ion-mid: #2b5ec2; --ion-dim: #17325c; --ion-rgb: 77,141,255;
+  --mote-rgb: 255,140,150;
+}
+
+:root[data-theme="thor"] {
+  --void: #04060f; --plate: #0a0f1f; --plate-hi: #101733; --edge: #1e2a55;
+  --hud: #9bc4ff; --hud-mid: #5f86c4; --hud-dim: #2c3f66; --hud-rgb: 155,196,255;
+  --ion: #ffd166; --ion-mid: #c49a35; --ion-dim: #5e4a1a; --ion-rgb: 255,209,102;
+  --mote-rgb: 190,220,255;
+}
+
+:root[data-theme="guardians"] {
+  --void: #0b0510; --plate: #16091f; --plate-hi: #1f0d2b; --edge: #3a1a4d;
+  --hud: #ff5db8; --hud-mid: #c33a8b; --hud-dim: #661d49; --hud-rgb: 255,93,184;
+  --ion: #ffa14d; --ion-mid: #c47430; --ion-dim: #5e3a17; --ion-rgb: 255,161,77;
+  --mote-rgb: 255,150,210;
+}
+
+:root[data-theme="cap"] {
+  --void: #04070f; --plate: #091120; --plate-hi: #0e1930; --edge: #172c52;
+  --hud: #7fa9ff; --hud-mid: #4a72c4; --hud-dim: #23365e; --hud-rgb: 127,169,255;
+  --ion: #ff5d6b; --ion-mid: #c43a48; --ion-dim: #5e1c24; --ion-rgb: 255,93,107;
+  --mote-rgb: 200,215,255;
+}
+
+:root[data-theme="strange"] {
+  --void: #050a08; --plate: #0a1710; --plate-hi: #0f2016; --edge: #1b3b28;
+  --hud: #5fe3a0; --hud-mid: #2f9e68; --hud-dim: #17492f; --hud-rgb: 95,227,160;
+  --ion: #ff5a4d; --ion-mid: #c23a30; --ion-dim: #5e1c17; --ion-rgb: 255,90,77;
+  --mote-rgb: 140,240,190;
+}
+
+:root[data-theme="panther"] {
+  --void: #07050d; --plate: #100b1c; --plate-hi: #171029; --edge: #2a1e4a;
+  --hud: #b18bff; --hud-mid: #7d5cc4; --hud-dim: #3b2b66; --hud-rgb: 177,139,255;
+  --ion: #cfd8e6; --ion-mid: #8e9bb0; --ion-dim: #3f4a5c; --ion-rgb: 207,216,230;
+  --mote-rgb: 190,165,255;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html { color-scheme: dark; }
@@ -48,6 +100,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 420ms ease, color 420ms ease;
 }
 
 body.busy { cursor: progress; }
@@ -58,8 +111,8 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 50% at 22% 45%, rgba(255,179,55,0.07), transparent 70%),
-    radial-gradient(ellipse 60% 60% at 85% 15%, rgba(95,211,243,0.05), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 22% 45%, rgba(var(--hud-rgb),0.07), transparent 70%),
+    radial-gradient(ellipse 60% 60% at 85% 15%, rgba(var(--ion-rgb),0.05), transparent 70%),
     var(--void);
   z-index: -3;
   pointer-events: none;
@@ -95,8 +148,9 @@ body::before {
   font-family: var(--f-display);
   font-size: clamp(22px, 5vw, 40px);
   letter-spacing: 0.42em; text-indent: 0.42em;
+  text-transform: uppercase;
   color: var(--hud); margin-bottom: 26px;
-  text-shadow: 0 0 26px rgba(255,179,55,0.55);
+  text-shadow: 0 0 26px rgba(var(--hud-rgb),0.55);
 }
 #boot.done { opacity: 0; pointer-events: none; }
 
@@ -490,6 +544,57 @@ body::before {
 #toast.up { opacity: 1; transform: translate(-50%, 0); }
 #toast[data-kind="error"] { border-color: var(--alert); color: var(--alert); }
 #toast[data-kind="good"]  { border-color: var(--good); color: var(--good); }
+
+/* ---------------- sigil rail ----------------
+   Deliberately quiet: dim until hovered, so it reads as something you find
+   rather than a settings panel. Sits under the boot overlay (z-index 200). */
+
+.sigils {
+  position: fixed; z-index: 80;
+  right: clamp(6px, 1.1vw, 14px); top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 7px 5px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--plate);
+  background: color-mix(in srgb, var(--plate) 80%, transparent);
+  backdrop-filter: blur(7px);
+}
+
+.sigil-btn {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  padding: 0; border: 0; border-radius: 50%;
+  background: transparent; cursor: pointer;
+  color: var(--slate-dim);
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.sigil-btn svg {
+  width: 19px; height: 19px;
+  fill: none; stroke: currentColor;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.sigil-btn svg .fill { fill: currentColor; stroke: none; }
+
+.sigil-btn:hover { color: var(--hud); transform: translateX(-3px); }
+.sigil-btn:focus-visible { outline: 1px solid var(--ion); outline-offset: 2px; }
+
+.sigil-btn[aria-pressed="true"] {
+  color: var(--hud);
+  background: color-mix(in srgb, var(--hud) 15%, transparent);
+  box-shadow: 0 0 14px rgba(var(--hud-rgb), 0.32);
+}
+
+/* Vertical rail would collide with the console on narrow screens. */
+@media (max-width: 940px) {
+  .sigils {
+    top: auto; bottom: 10px;
+    right: 50%; transform: translateX(50%);
+    flex-direction: row;
+  }
+  .sigil-btn:hover { transform: translateY(-3px); }
+}
 
 /* ---------------- footer ---------------- */
 

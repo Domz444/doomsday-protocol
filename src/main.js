@@ -5,7 +5,8 @@ import {
   adoptRoom, goSolo, onChange, forgetRoom,
 } from './state.js';
 import { fetchRoom, createRoom, joinRoom, setWatch } from './net.js';
-import { startField, runBoot, startClock, drawTicks } from './hud.js';
+import { startField, runBoot, startClock, drawTicks, syncPalette } from './hud.js';
+import { THEMES, loadTheme, applyTheme, mountSigils } from './themes.js';
 import { mountManifest, mountFilters, paint, askAgent, toast, setBusy } from './ui.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -52,7 +53,7 @@ async function onToggle(key) {
 async function formSquad() {
   const answer = await askAgent({
     title: 'Form a squad',
-    hint: 'You get a 5-character code. Anyone with it joins your board — your current progress carries over.',
+    hint: 'You get a 5-character code. Anyone with it joins your board, and your current progress carries over.',
     confirm: 'Create squad',
   });
   if (!answer) return;
@@ -121,7 +122,7 @@ function leaveSquad() {
   goSolo();
   history.replaceState(null, '', location.pathname);
   paint();
-  toast(`Left squad ${code}. Back to solo — your log is intact.`);
+  toast(`Left squad ${code}. Back to solo, and your log is intact.`);
 }
 
 function writeRoomToUrl(code) {
@@ -165,6 +166,20 @@ async function purgeLog() {
 }
 
 /* ============================================================
+   PALETTE
+   ============================================================ */
+
+let redrawField = () => {};
+
+/** Swap the HUD palette. The canvas needs a nudge; the DOM repaints itself. */
+function pickTheme(id) {
+  const theme = applyTheme(id);
+  syncPalette();
+  redrawField();
+  toast(theme.line);
+}
+
+/* ============================================================
    SYNC LOOP
    ============================================================ */
 
@@ -186,10 +201,14 @@ async function sync() {
 async function boot() {
   const storedCode = loadLocal();
 
+  // Palette first: the boot sigil and the canvas both read from it.
+  mountSigils($('#sigils'), pickTheme);
+  applyTheme(loadTheme().id, { save: false });
+
   mountManifest($('#manifest'), onToggle);
   mountFilters($('#filters'), (id) => { state.filter = id; paint(); });
   drawTicks($('#ticks'));
-  startField($('#field'));
+  redrawField = startField($('#field'));
   startClock(TARGET_DATE, {
     d: $('#c-d'), h: $('#c-h'), m: $('#c-m'), s: $('#c-s'),
   });
@@ -218,5 +237,5 @@ async function boot() {
 
 boot();
 
-// Handy in the console: DOOMSDAY.MANIFEST, DOOMSDAY.state
-globalThis.DOOMSDAY = { MANIFEST, keyOf, state };
+// Handy in the console: DOOMSDAY.MANIFEST, DOOMSDAY.state, DOOMSDAY.theme('thor')
+globalThis.DOOMSDAY = { MANIFEST, keyOf, state, THEMES, theme: pickTheme };

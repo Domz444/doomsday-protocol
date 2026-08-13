@@ -19,7 +19,7 @@ export const TIERS = [
   },
   {
     id: 'lore', name: 'Deep Lore', color: '#5fd3f3', dim: '#17495c',
-    note: 'Optional — pays off in single scenes',
+    note: 'Optional, but pays off in single scenes',
   },
   {
     id: 'mutant', name: 'Mutant Archive', color: '#a98bff', dim: '#3d2f66',
@@ -44,7 +44,7 @@ export const MANIFEST = [
   { t: 'crit', n: 'Deadpool & Wolverine', y: 2024, f: 'FILM', min: 128,
     i: 'Canonizes the Fox universe, introduces anchor beings and the Void. The bridge to the X-Men.' },
   { t: 'crit', n: 'Thunderbolts*', y: 2025, f: 'FILM', min: 126,
-    i: 'The team that answers the call in Doomsday gets assembled — and renamed — here.' },
+    i: 'The team that answers the call in Doomsday gets assembled, and renamed, here.' },
   { t: 'crit', n: 'The Fantastic Four: First Steps', y: 2025, f: 'FILM', min: 115,
     i: 'Earth-828, Franklin Richards, and the arrival that sets the whole endgame in motion.' },
   { t: 'crit', n: 'Spider-Man: Brand New Day', y: 2026, f: 'FILM', min: 125,
@@ -56,13 +56,13 @@ export const MANIFEST = [
   { t: 'rec', n: 'Ms. Marvel', y: 2022, f: 'SERIES', min: 290,
     i: 'Kamala Khan, plus the first quiet hint that a mutant gene exists in this reality.' },
   { t: 'rec', n: 'Black Panther: Wakanda Forever', y: 2022, f: 'FILM', min: 161,
-    i: 'New Black Panther, and Namor — a wildcard whenever the world needs defending.' },
+    i: 'New Black Panther, and Namor, a wildcard whenever the world needs defending.' },
   { t: 'rec', n: 'Ant-Man and the Wasp: Quantumania', y: 2023, f: 'FILM', min: 124,
     i: 'The Quantum Realm as a back door between realities. Cassie Lang steps up.' },
   { t: 'rec', n: 'Guardians of the Galaxy Vol. 3', y: 2023, f: 'FILM', min: 150,
     i: 'Closes the cosmic ledger and explains why the current roster looks nothing like it did.' },
   { t: 'rec', n: 'The Marvels', y: 2023, f: 'FILM', min: 105,
-    i: 'Carol, Kamala, Monica — and a post-credits tear straight into the X-Men universe.' },
+    i: 'Carol, Kamala, Monica, and a post-credits tear straight into the X-Men universe.' },
   { t: 'rec', n: 'Agatha All Along', y: 2024, f: 'SERIES', min: 320,
     i: 'The Witches’ Road and Billy Maximoff, who is very much unfinished business.' },
   { t: 'rec', n: 'Captain America: Brave New World', y: 2025, f: 'FILM', min: 118,
@@ -70,7 +70,7 @@ export const MANIFEST = [
   { t: 'rec', n: 'Daredevil: Born Again', y: 2025, f: 'SERIES', min: 420,
     i: 'Street level under Fisk’s New York. Matt Murdock is on the board again.' },
   { t: 'rec', n: 'Ironheart', y: 2025, f: 'SERIES', min: 250,
-    i: 'Riri Williams inherits the Stark problem — tech versus magic, and she picks badly.' },
+    i: 'Riri Williams inherits the Stark problem: tech versus magic, and she picks badly.' },
   { t: 'rec', n: 'Wonder Man', y: 2026, f: 'SERIES', min: 240,
     i: 'Simon Williams, and the most recent read on where the Avengers name even stands.' },
 
@@ -78,7 +78,7 @@ export const MANIFEST = [
   { t: 'lore', n: 'What If...? — Season 1', y: 2021, f: 'SERIES', min: 290,
     i: 'The multiverse as an anthology. Establishes the Watcher and Strange Supreme.' },
   { t: 'lore', n: 'Hawkeye', y: 2021, f: 'SERIES', min: 280,
-    i: 'Kate Bishop and Yelena Belova collide — half the Thunderbolts roster starts here.' },
+    i: 'Kate Bishop and Yelena Belova collide, and half the Thunderbolts roster starts here.' },
   { t: 'lore', n: 'Moon Knight', y: 2022, f: 'SERIES', min: 290,
     i: 'Egyptian gods operate outside the Avengers entirely. A power set nobody has accounted for.' },
   { t: 'lore', n: 'She-Hulk: Attorney at Law', y: 2022, f: 'SERIES', min: 280,
@@ -110,7 +110,7 @@ export const MANIFEST = [
   { t: 'mutant', n: 'Logan', y: 2017, f: 'FILM', min: 137,
     i: 'The ending that Deadpool & Wolverine deliberately refused to undo. Watch it anyway.' },
   { t: 'mutant', n: 'Fantastic Four', y: 2005, f: 'FILM', min: 106,
-    i: 'Optional and rough — but it is the last time a live-action Doom carried a film.' },
+    i: 'Optional and rough, but it is the last time a live-action Doom carried a film.' },
 ];
 
 /** Stable identity for an entry, used as the storage/sync key. */

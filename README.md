@@ -80,6 +80,7 @@ doomsday-protocol/
 │   ├── net.js           fetch wrapper over /api
 │   ├── ui.js            Rendering: rows, rail, squad panel, dialog, toasts
 │   ├── hud.js           Ambient canvas, boot sequence, countdown, ring ticks
+│   ├── themes.js        Sigil rail — alternate palettes and their chrome
 │   ├── main.js          Wiring and the sync loop
 │   └── style.css        The whole HUD
 ├── index.html
@@ -97,7 +98,7 @@ agent; rejoin with the same code and pick your callsign again.
 **Sync** is a 6-second poll while the tab is visible. Rooms carry a version
 counter (`v`) so an unchanged room causes no re-render. Toggles apply
 optimistically and roll back if the request fails; the status chip in the top
-bar shows `SQUAD LINKED`, `SYNCING`, or `OFFLINE — LOCAL ONLY`.
+bar shows `SQUAD LINKED`, `SYNCING`, or `OFFLINE: LOCAL ONLY`.
 
 **Writes** use `$addToSet` / `$pull` on the matched member, so two people
 toggling at once cannot clobber each other.
@@ -134,8 +135,14 @@ used for the "runtime left" and "per day, to make it" readouts.
 
 ## Notes
 
-- Single-theme by design — it is an instrument readout, so it commits to the
-  dark HUD in any host theme.
+- Dark by design — it is an instrument readout, so it commits to the dark HUD
+  in any host theme. The sigil rail on the right edge repaints it in seven
+  character palettes (Stark, Spider-Man, Thor, Guardians, Captain America,
+  Doctor Strange, Black Panther), each also rewriting the clearance, sector and
+  org strings. The choice persists in `localStorage`.
+- Adding a palette: append to `THEMES` in [`src/themes.js`](src/themes.js) and
+  add a matching `:root[data-theme="<id>"]` block in `style.css`. Nothing else
+  needs touching — no colour is named directly below that block.
 - `prefers-reduced-motion` is respected: the boot sequence is skipped, the
   ambient field renders one static frame, and transitions are disabled.
 - Rows are real `<button>`s with `aria-pressed`, so the board is keyboard

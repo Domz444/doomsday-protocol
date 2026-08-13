@@ -227,7 +227,7 @@ function paintStatus() {
   el.dataset.status = state.status;
   el.textContent =
     state.status === 'syncing' ? 'SYNCING'
-    : state.status === 'offline' ? 'OFFLINE — LOCAL ONLY'
+    : state.status === 'offline' ? 'OFFLINE: LOCAL ONLY'
     : state.mode === 'squad' ? 'SQUAD LINKED'
     : 'SOLO';
 }
