@@ -8,6 +8,111 @@ const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
  */
 let palette = { hud: '255,179,55', ion: '95,211,243', mote: '255,196,110' };
 
+/**
+ * What drifts up through the field, per palette. The context arrives already
+ * translated to the mote and rotated, with fill and stroke both set to the
+ * palette's mote colour — a drifter only describes its shape around 0,0.
+ *
+ * `m.r` runs about 0.4 to 1.2, so shapes scale off it to keep the same size
+ * spread the original embers had.
+ */
+const DRIFTERS = {
+  /* Stark: embers off the reactor. */
+  stark: (x, m) => {
+    x.beginPath();
+    x.arc(0, 0, m.r, 0, Math.PI * 2);
+    x.fill();
+  },
+
+  /* Spider-Man: torn web fragments — spokes plus two catch threads. */
+  spider: (x, m) => {
+    const s = 3 + m.r * 4;
+    const spokes = 5;
+    x.beginPath();
+    for (let i = 0; i < spokes; i++) {
+      const a = (i / spokes) * Math.PI * 2;
+      x.moveTo(0, 0);
+      x.lineTo(Math.cos(a) * s, Math.sin(a) * s);
+    }
+    for (const ring of [0.45, 0.85]) {
+      for (let i = 0; i < spokes; i++) {
+        const a1 = (i / spokes) * Math.PI * 2;
+        const a2 = ((i + 1) / spokes) * Math.PI * 2;
+        x.moveTo(Math.cos(a1) * s * ring, Math.sin(a1) * s * ring);
+        x.lineTo(Math.cos(a2) * s * ring, Math.sin(a2) * s * ring);
+      }
+    }
+    x.stroke();
+  },
+
+  /* Thor: forked lightning. */
+  thor: (x, m) => {
+    const s = 3 + m.r * 5;
+    x.beginPath();
+    x.moveTo(0, -s);
+    x.lineTo(-s * 0.38, -s * 0.1);
+    x.lineTo(s * 0.12, 0);
+    x.lineTo(-s * 0.22, s);
+    x.stroke();
+  },
+
+  /* Guardians: Groot saplings. */
+  guardians: (x, m) => {
+    const s = 3 + m.r * 4;
+    x.beginPath();
+    x.moveTo(0, s); x.lineTo(0, -s * 0.25);
+    x.moveTo(0, s * 0.3); x.lineTo(-s * 0.62, -s * 0.3);
+    x.moveTo(0, -s * 0.05); x.lineTo(s * 0.62, -s * 0.68);
+    x.stroke();
+    x.beginPath();
+    x.arc(0, -s * 0.5, s * 0.22, 0, Math.PI * 2);
+    x.fill();
+  },
+
+  /* Captain America: shields, seen edge-on as concentric rings. */
+  cap: (x, m) => {
+    const s = 2.5 + m.r * 3.5;
+    x.beginPath(); x.arc(0, 0, s, 0, Math.PI * 2); x.stroke();
+    x.beginPath(); x.arc(0, 0, s * 0.55, 0, Math.PI * 2); x.stroke();
+    x.beginPath(); x.arc(0, 0, s * 0.18, 0, Math.PI * 2); x.fill();
+  },
+
+  /* Doctor Strange: sling-ring sparks. */
+  strange: (x, m) => {
+    const s = 3 + m.r * 4;
+    x.beginPath();
+    x.arc(0, 0, s * 0.6, 0, Math.PI * 2);
+    x.stroke();
+    x.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      x.moveTo(Math.cos(a) * s * 0.78, Math.sin(a) * s * 0.78);
+      x.lineTo(Math.cos(a) * s, Math.sin(a) * s);
+    }
+    x.stroke();
+  },
+
+  /* Black Panther: the nested triangle of Wakandan design. */
+  panther: (x, m) => {
+    const s = 3 + m.r * 4;
+    const tri = (r) => {
+      x.beginPath();
+      for (let i = 0; i < 3; i++) {
+        const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
+        const px = Math.cos(a) * r;
+        const py = Math.sin(a) * r;
+        if (i === 0) x.moveTo(px, py); else x.lineTo(px, py);
+      }
+      x.closePath();
+      x.stroke();
+    };
+    tri(s);
+    tri(s * 0.45);
+  },
+};
+
+let drifter = DRIFTERS.stark;
+
 export function syncPalette() {
   const cs = getComputedStyle(document.documentElement);
   const pick = (name, current) => cs.getPropertyValue(name).trim() || current;
@@ -16,6 +121,7 @@ export function syncPalette() {
     ion: pick('--ion-rgb', palette.ion),
     mote: pick('--mote-rgb', palette.mote),
   };
+  drifter = DRIFTERS[document.documentElement.dataset.theme] || DRIFTERS.stark;
 }
 
 export function startField(canvas) {
@@ -40,6 +146,8 @@ export function startField(canvas) {
       r: 0.4 + ((i * 13) % 10) / 12,
       s: 0.06 + ((i * 7) % 10) / 90,
       o: 0.1 + ((i * 3) % 10) / 32,
+      a: (((i * 47) % 360) * Math.PI) / 180, // resting angle
+      w: (((i % 5) - 2) * 0.000018),         // slow spin, both directions
     }));
   }
 
@@ -74,15 +182,21 @@ export function startField(canvas) {
     x.moveTo(cx, cy - base); x.lineTo(cx, cy + base);
     x.stroke();
 
+    x.lineWidth = 1;
     for (const m of motes) {
       if (!still) {
         m.y -= m.s;
         if (m.y < -4) m.y = h + 4;
       }
-      x.beginPath();
-      x.arc(m.x, m.y, m.r, 0, Math.PI * 2);
-      x.fillStyle = `rgba(${palette.mote},${m.o})`;
-      x.fill();
+      const ink = `rgba(${palette.mote},${m.o})`;
+      x.fillStyle = ink;
+      x.strokeStyle = ink;
+
+      x.save();
+      x.translate(m.x, m.y);
+      x.rotate(m.a + (still ? 0 : t * m.w));
+      drifter(x, m);
+      x.restore();
     }
 
     if (!still) requestAnimationFrame(frame);
