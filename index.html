@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DOOMSDAY PROTOCOL // Stark Mission Manifest</title>
+  <meta name="description" content="Track every Marvel film and series worth watching before Avengers: Doomsday — solo, or as a squad on one shared board." />
+  <meta name="theme-color" content="#05080e" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+  <meta property="og:title" content="DOOMSDAY PROTOCOL" />
+  <meta property="og:description" content="38 transmissions stand between you and Avengers: Doomsday. Log them with your squad." />
+  <meta property="og:type" content="website" />
+</head>
+<body>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="overlay" aria-hidden="true"></div>
+
+  <div id="boot" aria-hidden="true">
+    <div class="sigil">STARK INDUSTRIES</div>
+    <ol>
+      <li><b>J.A.R.V.I.S. kernel</b><span>ONLINE</span></li>
+      <li><b>Multiversal telemetry</b><span>SYNCED</span></li>
+      <li><b>Incursion forecast</b><span>CRITICAL</span></li>
+      <li><b>Manifest — 38 entries</b><span>LOADED</span></li>
+      <li><b>Countdown to Doomsday</b><span>RUNNING</span></li>
+    </ol>
+  </div>
+
+  <div class="shell">
+    <div class="topbar">
+      <span class="live"><span class="dot"></span><span id="sync-status">SOLO</span></span>
+      <span>CLEARANCE: STARK-01</span>
+      <span>SECTOR: EARTH-616</span>
+      <span class="spacer">TARGET: 18 DEC 2026</span>
+    </div>
+
+    <header class="masthead">
+      <div class="eyebrow">◆ Incursion imminent — briefing required</div>
+      <h1>Doomsday<em>Protocol</em></h1>
+      <p>
+        Thirty-eight transmissions stand between you and <strong>Avengers: Doomsday</strong>.
+        Sorted by how badly you'll be lost without them — critical path first, roster context
+        second, deep lore for completionists, and the mutant archive because half that cast is
+        walking back through a hole in reality. Tap any entry to log it, or
+        <strong>form a squad</strong> and watch your friends' progress land on the same board.
+      </p>
+    </header>
+
+    <div class="console">
+      <aside class="rail">
+        <!-- readiness -->
+        <section class="panel">
+          <h2>Mission Readiness</h2>
+          <div class="reactor">
+            <div class="wrap">
+              <svg viewBox="0 0 200 200" aria-hidden="true">
+                <g class="ring-ticks" id="ticks"></g>
+                <circle class="ring-track" cx="100" cy="100" r="82"></circle>
+                <circle class="ring-fill" id="ring" cx="100" cy="100" r="82"
+                        transform="rotate(-90 100 100)"
+                        stroke-dasharray="515.22" stroke-dashoffset="515.22"></circle>
+              </svg>
+              <div class="readout">
+                <div class="pct"><span id="pct">0</span><sup>%</sup></div>
+                <div class="cap">Briefed</div>
+              </div>
+            </div>
+          </div>
+          <dl class="stats">
+            <div class="stat"><dt>Critical path</dt><dd id="s-crit">0 / 10</dd></div>
+            <div class="stat"><dt>Total logged</dt><dd class="ion" id="s-total">0 / 38</dd></div>
+            <div class="stat"><dt>Runtime left</dt><dd id="s-time">—</dd></div>
+            <div class="stat"><dt>Per day, to make it</dt><dd id="s-rate">—</dd></div>
+          </dl>
+        </section>
+
+        <!-- squad -->
+        <section class="panel">
+          <h2>Squad</h2>
+
+          <div id="squad-solo">
+            <p class="panel-copy">
+              You're tracking alone. Form a squad to put everyone's progress on one board.
+            </p>
+            <div class="btn-row">
+              <button type="button" class="btn primary" id="btn-form">Form squad</button>
+              <button type="button" class="btn" id="btn-join">Join</button>
+            </div>
+          </div>
+
+          <div id="squad-active" hidden>
+            <div class="code-plate">
+              <span class="code-label">Squad code</span>
+              <strong id="room-code">—</strong>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn primary" id="btn-copy">Copy invite link</button>
+              <button type="button" class="btn" id="btn-leave">Leave</button>
+            </div>
+            <ol class="squad-list" id="squad-list"></ol>
+          </div>
+        </section>
+
+        <!-- filters -->
+        <section class="panel">
+          <h2>Targeting Filter</h2>
+          <div class="filters" id="filters"></div>
+        </section>
+
+        <!-- countdown -->
+        <section class="panel">
+          <h2>Time to Impact</h2>
+          <div class="clock">
+            <div><b id="c-d">—</b><span>Days</span></div>
+            <div><b id="c-h">—</b><span>Hrs</span></div>
+            <div><b id="c-m">—</b><span>Min</span></div>
+            <div><b id="c-s">—</b><span>Sec</span></div>
+          </div>
+        </section>
+
+        <button type="button" class="purge" id="purge">Purge Log</button>
+      </aside>
+
+      <main class="manifest" id="manifest"></main>
+    </div>
+
+    <footer class="footer">
+      <span>Stark Industries // Doomsday Protocol v1.0</span>
+      <span>Runtimes are estimates</span>
+      <span class="spacer">Solo progress stays on this device</span>
+    </footer>
+  </div>
+
+  <!-- callsign / join dialog -->
+  <dialog id="prompt">
+    <form method="dialog" id="prompt-form">
+      <h3 id="prompt-title">Form a squad</h3>
+      <p id="prompt-hint"></p>
+
+      <label class="field" id="field-code" hidden>
+        <span>Squad code</span>
+        <input id="in-code" type="text" maxlength="8" autocomplete="off"
+               spellcheck="false" placeholder="K7F2A" />
+      </label>
+
+      <label class="field">
+        <span>Your callsign</span>
+        <input id="in-callsign" type="text" maxlength="18" autocomplete="off"
+               spellcheck="false" placeholder="TONY" required />
+      </label>
+
+      <p class="dialog-error" id="prompt-error" role="alert"></p>
+
+      <div class="btn-row end">
+        <button type="button" class="btn" id="prompt-cancel">Cancel</button>
+        <button type="submit" class="btn primary" id="prompt-confirm">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
